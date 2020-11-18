@@ -16,17 +16,10 @@ library(mefa)
 library(glmnet)
 library(Directional)
 library(hypergeo)
-# library(MultiRNG)
-
-# Run function in simdd_2
 library(matrixcalc)
 library(stringr)
 library(assertr)
-
-# For simulations
 library(Matrix)
-library(pracma)
-library(assertr)
 
 
 rep.row<-function(x,n){
