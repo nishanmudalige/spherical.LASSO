@@ -1,4 +1,4 @@
-Package: general.spherical
+Package: spherical.lasso
 Type: Package
 Title: An R package which calculates the generalized spherical harmonics
 Version: 1.0
