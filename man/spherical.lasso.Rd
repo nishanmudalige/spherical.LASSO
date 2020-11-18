@@ -22,7 +22,7 @@ If `extra.info = FALSE`, only the model is returned.
 
 [2] Beran, R.(1979), Exponential Models for Directional Data, Ann Statist 71162-1178.}
 \author{Nishan Mudalige}
-
+\note{This research was supported by a grant from the Google Cloud Platform.}
 \examples{
 ## Requires simmd by Kent et. al.
 ## See Kent, J. T., Ganeiber A.M., Mardia, K.V. (2017), A New Unified Approach for the Simulation of a Wide Class of Directional Distributions, Journal of Computational and Graphical Statistics, 27:2, 291-301
