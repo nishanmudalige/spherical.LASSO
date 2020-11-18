@@ -282,7 +282,7 @@ create.q.3 = function(p){
 ####################################
 
 
-gen.spherical.design1 = function(x, normalize.by.volume = T){
+spherical.design1 = function(x, normalize.by.volume = T){
   
   x = as.matrix(x)
   
@@ -314,7 +314,7 @@ gen.spherical.design1 = function(x, normalize.by.volume = T){
 
 
 
-gen.spherical.design2 = function(x, normalize.by.volume = T){
+spherical.design2 = function(x, normalize.by.volume = T){
   
   p = ncol(x)
   n = nrow(x)
@@ -362,86 +362,17 @@ gen.spherical.design2 = function(x, normalize.by.volume = T){
 
 
 
-gen.spherical.design3 = function(x, normalize.by.volume = T){
-  
-  p = ncol(x)
-  n = nrow(x)
-  
-  # x = as.matrix(x, nrow=n, ncol=p)
-  
-  q1 = create.q.1(p)
-  q2 = create.q.2(p)
-  q3 = create.q.3(p)
-  
-  m1 = nrow(q1)
-  temp1 = matrix(0, n, m1)
-  
-  for(i in 1:n){
-    for(j in 1:m1){
-      temp1[i,j] = y.q.x(x[i,], q1[j,], normalize.by.volume)
-    }
-  }
-  
-  
-  m2 = nrow(q2)
-  temp2 = matrix(0, n, m2)
-  
-  for(i in 1:n){
-    for(j in 1:m2){
-      temp2[i,j] = y.q.x(x[i,], q2[j,], normalize.by.volume)
-    }
-  }
-  
-  
-  m3 = nrow(q3)
-  temp3 = matrix(0, n, m3)
-  
-  for(i in 1:n){
-    for(j in 1:m3){
-      temp3[i,j] = y.q.x(x[i,], q3[j,], normalize.by.volume)
-    }
-  }
-  
-  
-  out1 = cbind(temp1, temp2, temp3)
-  
-  q1.names = apply(q1 , 1 , paste , collapse = "" )
-  q1.names = paste("q=", q1.names, sep="")
-  
-  q2.names = apply(q2 , 1 , paste , collapse = "" )
-  q2.names = paste("q=", q2.names, sep="")
-  
-  q3.names = apply(q3 , 1 , paste , collapse = "" )
-  q3.names = paste("q=", q3.names, sep="")
-  
-  colnames(out1) = c(q1.names, q2.names, q3.names)
-  
-  return(out1)  
-  
-}
-
-
-
-
-
-
-
-
-
-gen.spherical.design = gen.spherical.design2
-
-gen.spherical.lasso = function(x.entered, q, normalize.by.volume = T,
+# General
+spherical.lasso = function(x.entered, q, normalize.by.volume = T,
                                intercept=FALSE, extra.info=FALSE){
   
   q = q
   n = nrow(x.entered)
-  x.design = gen.spherical.design(x.entered, normalize.by.volume)
+  x.design = spherical.design(x.entered, normalize.by.volume)
   
-  # x.design = x.design - mefa:::rep.data.frame(colMeans(x.design), n)
   x.design = x.design - colMeans(x.design)
   
   h = vmfkde.tune(x.design)["Optimal h"]
-  # f.hat.n = vmf.kde(x=x.design, h=h, thumb="rot")$f
   f.hat.n = vmf.kde(x=x.entered, h=h, thumb="rot")$f
   
   f.hat.n[is.nan(f.hat.n)] = 1e-10
@@ -467,39 +398,7 @@ gen.spherical.lasso = function(x.entered, q, normalize.by.volume = T,
 
 
 
-# setwd("~/Desktop/Comet")
-# comet = read.table("ast_data.dat", header=TRUE)
-# 
-# 
-# theta = comet[,"inclination"]
-# phi = comet[,"Omega"] - (pi/2) 
-# phi = phi %% (2*pi)
-# # phi = -phi
-# 
-# comet.data = data.frame(theta, phi)
-# 
-# x = sin(comet.data$theta) * cos(comet.data$phi)
-# y = sin(comet.data$theta) * sin(comet.data$phi)
-# z = cos(comet.data$theta)
-# 
-# comet.data.xyz = cbind(x, y, z)
-# 
-# comet.data.xyz2 = cbind(comet.data.xyz, comet.data.xyz)
-# comet.data.xyz2 = comet.data.xyz2[,sample(1:ncol(comet.data.xyz2))]
-# 
-# model.comet.vmf22 = gen.spherical.lasso(comet.data.xyz2, p=2, extra.info=T)
 
-
-
-
-
-# model.comet.vmf3 = gen.spherical.lasso(comet.data.xyz, p=3, extra.info=T)
-
-# betas = coef(model.comet.vmf3[[1]])
-
-# Remove blank intercept
-# betas = betas[,ncol(betas)]
-# betas = betas[-1]
 
 
 num.param = function(p){
@@ -512,20 +411,6 @@ num.param = function(p){
 
 
 
-
-
-# determine.dim = function(betas){
-#   p = 1
-#   while(num.param(p) < length(betas)){
-#     p = p+1
-#   }
-#   
-#   if( num.param(p) != length(betas)){
-#     warning("Incompatible number of coefficients")
-#   } else {
-#     return(p)
-#   }
-# }
 
 
 largest.digit = function(n){
@@ -543,7 +428,6 @@ largest.digit = function(n){
 
 
 
-
 determine.order = function(x){
   names.x = names(x)
   names.x = gsub("q=","",names.x)
@@ -557,9 +441,6 @@ determine.order = function(x){
 
 
 
-# temp = x
-# betas = x
-
 b.vector = function(betas, normalize.by.volume = T){
   
   p = determine.order(betas)
@@ -571,8 +452,6 @@ b.vector = function(betas, normalize.by.volume = T){
   
   num.x = as.numeric(names.x)
   names(betas) = num.x
-  
-  # dim = nchar(names.x)[1]
   
   q.all = as.matrix(combinations.order(dim ,p))
   
@@ -586,8 +465,6 @@ b.vector = function(betas, normalize.by.volume = T){
   name.vec = NULL
   
   for(i in 1:dim){
-    
-    # print(i)
     
     if(i == 1){
       current.index = which(as.numeric(names(betas)) == "11")
@@ -614,13 +491,6 @@ b.vector = function(betas, normalize.by.volume = T){
   
   
 }
-
-
-# b.vector(betas)
-
-
-
-
 
 
 
@@ -664,165 +534,6 @@ combinations.order = function(size, q){
 
 
 
-
-
-
-
-
-
-# B.matrix = function(betas, normalize.by.volume = T){
-#   
-#   p = determine.order(betas)
-#   
-#   names.x = names(betas)
-#   names.x = gsub("q=","",names.x)
-#   
-#   dim = max(nchar(names.x))
-#   
-#   names.df = strsplit(names.x, "")
-#   names.df = do.call("rbind", names.df)
-#   
-#   B = matrix(0, nrow = dim, ncol = dim)
-#   
-#   sum.part.diag12 = 0
-#   
-#   sum.indices = NULL
-#   
-#   # diag
-#   # diag
-#   # diag
-#   
-#   for(i in 1:dim){
-#     
-#     # print(i)
-#     
-#     # i = 1
-#     # i = 1
-#     if(i == 1 | i == 2){
-#       
-#       first.index = which(names.df[,dim-1] == "2" & names.df[,dim] == "0")
-#       
-#       # sum part
-#       if(dim == 3){
-#         sum.indices = sapply(names.df[,2:(dim-1)], function(r) any(r %in% "2" ))
-#       } else {
-#         sum.indices = apply(names.df[,2:(dim-1)], 1, function(r) any(r %in% "2" ))
-#       }
-#       sum.indices.not = (names.df[,dim] == "1")
-#       
-#       # remove = which(sum.indices == T & sum.indices.not == T)
-#       remove = which(sum.indices == T & sum.indices.not == T)
-#       sum.indices = sum.indices[-remove]
-#       
-#       # betas[sum.indices]
-#       sum.coef.vec = NULL
-#       for(k in 2:(dim-1)){
-#         sum.coef.vec[k] = 1/sqrt(k*(k+1))
-#       }
-#       sum.coef.vec = sum.coef.vec[-1]
-#       
-#       sum.part.diag12 = sum(sum.coef.vec * betas[sum.indices])
-#       
-#       # names.df[index,]
-#       B[i,i] = (-1)^(i+1) * 1/sqrt(2) * betas[first.index] - sum.part.diag12
-#       
-#     } 
-#     
-#     # i = 3 .. p-1
-#     # i = 3 .. p-1
-#     if (i>=3 & i<=(dim-1) ) {
-#       
-#       first.index = which(names.df[,dim-i+1] == "2")
-#       
-#       sum.indices = apply( cbind(names.df[,i:(dim-1)]) , 1, function(r) any(r %in% "2" ))
-#       sum.indices.not = (names.df[,dim] == "1")
-#       
-#       remove = which(sum.indices == T & sum.indices.not == T)
-#       sum.indices = sum.indices[-remove]
-#       
-#       sum.coef.vec = NULL
-#       for(k in i:(dim-1)){
-#         sum.coef.vec[k] = 1/sqrt(k*(k+1))
-#       }
-#       sum.coef.vec = sum.coef.vec[-c(1:(i-1))]
-#       
-#       sum.part = sum(sum.coef.vec * betas[sum.indices])
-#       
-#       B[i,i] = (i-1)/sqrt(i*(i+1)) * betas[first.index] - sum.part
-#       
-#     }
-#     
-#     # i = p
-#     # i = p
-#     if(i == dim){
-#       index = which(names.df[,1] == "2" & names.df[,dim] == "0")
-#       B[i,i] = (dim-1)/sqrt(dim*(dim-1)) * betas[index]
-#     }
-#     
-#   }
-#   
-#   
-#   # B
-#   
-#   # off-diag
-#   # off-diag
-#   # off-diag
-#   
-#   for(i in 1:dim){
-#     for(j in 1:dim){
-#       
-#       if(i == j){
-#         next 
-#         
-#       } else if(i == 1 & j == 2 ) {
-#         # print(paste(i,j))
-#         index = which(names.df[,dim-1] == "2" & names.df[,dim] == "1")
-#         B[1,2] = betas[index]
-#         
-#       } else if(i == 1 & j >=2 & j <= dim ) {
-#         # print(paste(i,j))
-#         index = which(names.df[,dim-j+1] == "1" 
-#                       & names.df[,dim-1] == "1" & names.df[,dim] == "1")
-#         B[i,j] = betas[index]
-#         
-#       } else if(i == 2 & j >=2 & j <= dim ) {
-#         # print(paste(i,j))
-#         index = which(names.df[,dim-j+1] == "1" 
-#                       & names.df[,dim-1] == "1" & names.df[,dim] == "0")
-#         B[i,j] = betas[index]
-#         
-#       } else if(i >= 3 & i < j & j <= dim ) {
-#         # print(paste(i,j))
-#         index = which(names.df[,dim-i+1] == "1" & names.df[,dim-j+1] == "1")
-#         B[i,j] = betas[index]
-#       }
-#       
-#     }
-#   }
-#   
-#   
-#   # Make the upper triangular matrix into a symmetric matrix
-#   B = forceSymmetric(B)
-#   
-#   if(isTRUE(normalize.by.volume)){
-#     
-#     volume = volume.hyper.sphere(dim)
-#     
-#     return( sqrt(dim*(dim+2)/4*volume) * B )
-#     
-#   } else {
-#     return(B)
-#   }
-#   
-# }
-
-
-# names.df[names.df[,dim-2+1] == "1" & names.df[,dim-1] == "1" & names.df[,dim] == "0", ]
-
-
-# B.matrix(betas)
-# 
-# diag(B.matrix(betas))
 
 
 
@@ -958,38 +669,9 @@ l.decomp = function(x, normalize.by.volume){
 }
 
 
-# l.decomp(betas)
 
 
 
-
-
-# m1 = matrix(c(0,1,0), ncol=1)
-# m2 = matrix(c(0,0,1), nrow=1)
-# m3 = replicate(3, rnorm(3))
-# m4 = replicate(3, rnorm(3))
-# 
-# rFisherBingham(nsim,mu=0,Aplus=0, q=dimset(mu,Aplus), mtop=1000)
-# 
-# 
-# mu = e1
-# mu = c(1,1,1,1,1,1)
-# Aplus = c(0,0,0,0,0,0)
-# q = 3
-# rFisherBingham(1000, mu=mu, Aplus=0, q=dimset(mu,Aplus), mtop=1000)
-
-# temp.points = rFisherBingham(1000, mu=mu, Aplus=0, q=dimset(mu,Aplus), mtop=1000)
-# temp.points = temp.points[1:1000,]
-
-# dim = 6
-# A = matrix(runif(dim*dim), dim, dim)
-# A = A %*% t(A)
-# A = forceSymmetric(A)
-# gamma.mat = A
-
-# gamma.mat = randortho(6)
-# round(gamma.mat %*% t(gamma.mat), 5)
-# rFisherBingham(10,mu = c(3,2,1,2,3,1), Aplus = nu.mat)
 
 
 

@@ -1,0 +1,14 @@
+Package: general.spherical
+Type: Package
+Title: An R package which calculates the generalized spherical harmonics
+Version: 1.0
+Author: Nishan Mudalige, Peter Kim
+Maintainer: Nishan Mudalige <nishan.mudalige.1@ulaval.ca>
+Description: An R package to apply a modified version of the LASSO on data over the hyper-sphere.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 4.0)
+Imports: general.spherical, orthopolynom, pracma, matrixcalc, mefa, Directional, hypergeo, stringr, assertr, Matrix, glmnet
+RoxygenNote: 7.1.1
+
