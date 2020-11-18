@@ -2,9 +2,7 @@
 \alias{spherical.lasso}
 \title{A function to evaluate a variation of the LASSO as applied to data over the hypersphere}
 \description{A function which applied the LASSO on data over the hypersphere. The von Mises Fisher Kernel from the `Directional` package is used to evaluate the estimated density for the LASSO.}
-\usage{
-spherical.lasso(x)
-}
+\usage{spherical.lasso(x.entered, q, normalize.by.volume, intercept, extra.info)}
 \arguments{
   \item{x.entered}{Data matrix. Should be in p>=3 dimensions.} 
   \item{q}{Maximum order of the q vectors. Should be either 1 or 2. Note that q=2 generates the design matrix for both q=1 and q=2.}
@@ -42,7 +40,6 @@ If `extra.info = FALSE`, only the model is returned.
 
 # x.mfb = rFisherBingham(nsim=n, mu=mu, Aplus=nu.mat, q=dimset(mu,nu.mat))
 # x.mfb = as.data.frame(x.mfb)
-# model.vmf = gen.spherical.lasso(x.mfb, 2, intercept=F,
-#                                 normalize.by.volume = F, extra.info=T)
+# model.vmf = gen.spherical.lasso(x.mfb, 2, intercept=F, normalize.by.volume = F, extra.info=T)
 
 }
