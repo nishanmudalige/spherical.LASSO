@@ -1,2 +1,3 @@
 # spherical.LASSO
-Applying the LASSO on data over the hypersphere.
+
+An R package to apply the LASSO on data over the hypersphere.
